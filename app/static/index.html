@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FarmAssist Web Sandbox</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="dark-mode">
+    <div class="app-container">
+        <!-- Sidebar (Visual only) -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="avatar"></div>
+                <div class="header-icons">
+                    <i class="fa-solid fa-moon theme-toggle" id="theme-toggle" title="Toggle Theme"></i>
+                </div>
+            </div>
+            <div class="chat-list">
+                <div class="chat-item active">
+                    <div class="chat-avatar"><i class="fa-solid fa-leaf"></i></div>
+                    <div class="chat-details">
+                        <div class="chat-name">FarmAssist AI</div>
+                        <div class="chat-preview">Online and ready...</div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Chat Area -->
+        <main class="chat-area">
+            <header class="chat-header">
+                <div class="chat-avatar"><i class="fa-solid fa-leaf"></i></div>
+                <div class="chat-info">
+                    <h2>FarmAssist AI</h2>
+                    <p>Agricultural Expert</p>
+                </div>
+            </header>
+
+            <div class="messages-container" id="messages-container">
+                <div class="message system">
+                    Welcome to the FarmAssist Web Sandbox! Send a message or tap the attachment icon to share your GPS location.
+                </div>
+            </div>
+
+            <!-- Typing indicator -->
+            <div class="typing-indicator hidden" id="typing-indicator">
+                <span>FarmAssist is typing</span><div class="dots"><span>.</span><span>.</span><span>.</span></div>
+            </div>
+
+            <footer class="chat-input-area">
+                <button class="icon-btn" id="btn-location" title="Send GPS Location">
+                    <i class="fa-solid fa-paperclip"></i>
+                </button>
+                <div class="input-wrapper">
+                    <input type="text" id="chat-input" placeholder="Type a message..." autocomplete="off">
+                </div>
+                <button class="icon-btn mic-btn" id="btn-mic" title="Hold to record audio">
+                    <i class="fa-solid fa-microphone"></i>
+                </button>
+                <button class="icon-btn hidden" id="btn-send">
+                    <i class="fa-solid fa-paper-plane"></i>
+                </button>
+            </footer>
+        </main>
+    </div>
+
+    <!-- Hidden audio element for TTS playback -->
+    <audio id="tts-player" style="display: none;"></audio>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>

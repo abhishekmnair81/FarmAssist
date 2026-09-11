@@ -1,0 +1,304 @@
+:root {
+    /* Dark Theme (Default) */
+    --bg-main: #0b141a;
+    --bg-panel: #111b21;
+    --bg-header: #202c33;
+    --bg-outgoing: #005c4b;
+    --bg-incoming: #202c33;
+    --bg-hover: #2a3942;
+    --text-primary: #e9edef;
+    --text-secondary: #8696a0;
+    --border-color: #222d34;
+    --accent: #00a884;
+}
+
+body.light-mode {
+    --bg-main: #efeae2;
+    --bg-panel: #ffffff;
+    --bg-header: #f0f2f5;
+    --bg-outgoing: #d9fdd3;
+    --bg-incoming: #ffffff;
+    --bg-hover: #f5f6f6;
+    --text-primary: #111b21;
+    --text-secondary: #667781;
+    --border-color: #e9edef;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Inter', sans-serif;
+}
+
+body {
+    background-color: #0c1317; /* Background behind the app container */
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* App Container */
+.app-container {
+    display: flex;
+    width: 100%;
+    max-width: 1400px;
+    height: 100vh;
+    background-color: var(--bg-main);
+    box-shadow: 0 6px 18px rgba(0,0,0,0.05);
+    overflow: hidden;
+}
+
+/* Sidebar */
+.sidebar {
+    width: 30%;
+    min-width: 300px;
+    background-color: var(--bg-panel);
+    border-right: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar-header, .chat-header {
+    height: 60px;
+    background-color: var(--bg-header);
+    display: flex;
+    align-items: center;
+    padding: 10px 16px;
+    justify-content: space-between;
+}
+
+.avatar, .chat-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.2rem;
+}
+
+.header-icons i {
+    color: var(--text-secondary);
+    font-size: 1.2rem;
+    cursor: pointer;
+    margin-left: 15px;
+    transition: color 0.3s;
+}
+
+.header-icons i:hover {
+    color: var(--text-primary);
+}
+
+.chat-list {
+    flex: 1;
+    overflow-y: auto;
+}
+
+.chat-item {
+    display: flex;
+    padding: 12px 16px;
+    cursor: pointer;
+    border-bottom: 1px solid var(--border-color);
+    transition: background-color 0.2s;
+}
+
+.chat-item:hover, .chat-item.active {
+    background-color: var(--bg-hover);
+}
+
+.chat-details {
+    margin-left: 15px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.chat-name {
+    color: var(--text-primary);
+    font-size: 1.1rem;
+    font-weight: 500;
+}
+
+.chat-preview {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    margin-top: 3px;
+}
+
+/* Main Chat Area */
+.chat-area {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--bg-main);
+    /* subtle pattern overlay */
+    background-image: url('https://web.whatsapp.com/img/bg-chat-tile-dark_a4be512e7195b6b733d9110b408f075d.png');
+    background-repeat: repeat;
+    background-size: 400px;
+    opacity: 0.95;
+}
+body.light-mode .chat-area {
+    background-image: url('https://web.whatsapp.com/img/bg-chat-tile-light_686b98c9fdffef3f63127759e2057750.png');
+}
+
+.chat-header {
+    justify-content: flex-start;
+}
+
+.chat-info {
+    margin-left: 15px;
+}
+
+.chat-info h2 {
+    color: var(--text-primary);
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+.chat-info p {
+    color: var(--text-secondary);
+    font-size: 0.8rem;
+    margin-top: 2px;
+}
+
+.messages-container {
+    flex: 1;
+    padding: 20px 5%;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.message {
+    max-width: 65%;
+    padding: 8px 12px;
+    border-radius: 7.5px;
+    margin-bottom: 12px;
+    font-size: 0.95rem;
+    line-height: 1.4;
+    color: var(--text-primary);
+    position: relative;
+    box-shadow: 0 1px 0.5px rgba(0,0,0,0.13);
+    animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    white-space: pre-wrap; /* For Markdown-like formatting */
+}
+
+@keyframes popIn {
+    from { opacity: 0; transform: translateY(10px) scale(0.95); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.message.system {
+    align-self: center;
+    background-color: var(--bg-header);
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    text-align: center;
+    border-radius: 12px;
+}
+
+.message.incoming {
+    align-self: flex-start;
+    background-color: var(--bg-incoming);
+    border-top-left-radius: 0;
+}
+
+.message.outgoing {
+    align-self: flex-end;
+    background-color: var(--bg-outgoing);
+    border-top-right-radius: 0;
+}
+
+/* Audio Player inside Message */
+.audio-player-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 5px;
+    background: rgba(0,0,0,0.1);
+    padding: 5px 10px;
+    border-radius: 20px;
+}
+
+/* Input Area */
+.chat-input-area {
+    min-height: 62px;
+    background-color: var(--bg-header);
+    display: flex;
+    align-items: center;
+    padding: 10px 16px;
+    gap: 12px;
+}
+
+.icon-btn {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    font-size: 1.4rem;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 50%;
+    transition: all 0.2s;
+}
+
+.icon-btn:hover {
+    color: var(--text-primary);
+}
+
+.icon-btn.recording {
+    color: #f15c6d;
+    animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+.input-wrapper {
+    flex: 1;
+    background-color: var(--bg-panel);
+    border-radius: 8px;
+    padding: 9px 12px;
+}
+
+#chat-input {
+    width: 100%;
+    border: none;
+    background: transparent;
+    color: var(--text-primary);
+    font-size: 0.95rem;
+    outline: none;
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* Typing Indicator */
+.typing-indicator {
+    padding: 10px 5%;
+    color: var(--accent);
+    font-size: 0.85rem;
+    font-weight: 500;
+    align-self: flex-start;
+}
+
+.dots span {
+    animation: blink 1.4s infinite both;
+    font-size: 1.2rem;
+    line-height: 10px;
+}
+.dots span:nth-child(2) { animation-delay: 0.2s; }
+.dots span:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes blink {
+    0% { opacity: 0.2; }
+    20% { opacity: 1; }
+    100% { opacity: 0.2; }
+}

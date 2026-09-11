@@ -1,0 +1,43 @@
+
+services:
+  fastapi-bot:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      - GROQ_API_KEY=${GROQ_API_KEY}
+      - OPENWA_API_URL=${OPENWA_API_URL:-http://openwa-gateway:2785}
+      - OPENWA_API_KEY=${OPENWA_API_KEY}
+      - OPENWA_SESSION_ID=${OPENWA_SESSION_ID:-default}
+      - DEFAULT_LAT=${DEFAULT_LAT:-10.6541474}
+      - DEFAULT_LON=${DEFAULT_LON:-76.7359742}
+      - DEFAULT_VOICE=${DEFAULT_VOICE:-en-IN-NeerjaNeural}
+      - WHITELISTED_NUMBERS=${WHITELISTED_NUMBERS}
+    volumes:
+      - ./app:/app/app
+      - bot_data:/app/data
+    networks:
+      - bot_network
+    depends_on:
+      - openwa-gateway
+
+  openwa-gateway:
+    image: rmyndharis/openwa:latest
+    ports:
+      - "2785:2785"
+    environment:
+      - API_KEY=farmbot_secret_api_key_2026
+      - WEBHOOK_SSRF_PROTECT=false
+    volumes:
+      - wa_data:/app/data
+    networks:
+      - bot_network
+    restart: unless-stopped
+
+networks:
+  bot_network:
+    driver: bridge
+
+volumes:
+  bot_data:
+  wa_data:
