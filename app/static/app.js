@@ -38,13 +38,31 @@ document.addEventListener('DOMContentLoaded', () => {
 
     btnSend.addEventListener('click', sendTextMessage);
 
+    function formatMarkdown(text) {
+        if (!text) return "";
+        let formatted = text
+            // Escape HTML entities to prevent XSS
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            // Bold
+            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+            // Italic
+            .replace(/\*(.*?)\*/g, '<em>$1</em>')
+            // Bullet points
+            .replace(/^[•\-\*]\s+(.*)$/gm, '<li>$1</li>')
+            // Numbered lists
+            .replace(/^(\d+)\.\s+(.*)$/gm, '<li><strong>$1.</strong> $2</li>')
+            // Line breaks
+            .replace(/\n/g, '<br>');
+        return formatted;
+    }
+
     function addMessage(text, type, audioB64 = null) {
         const msgDiv = document.createElement('div');
         msgDiv.className = `message ${type}`;
         
-        // Basic Markdown-to-HTML parser for bold text (e.g., **bold**)
-        let formattedText = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-        msgDiv.innerHTML = formattedText;
+        msgDiv.innerHTML = formatMarkdown(text);
 
         if (audioB64) {
             const btnPlay = document.createElement('button');
@@ -52,13 +70,19 @@ document.addEventListener('DOMContentLoaded', () => {
             btnPlay.style.marginTop = '10px';
             btnPlay.style.background = 'var(--bg-header)';
             btnPlay.style.border = 'none';
-            btnPlay.style.padding = '8px 12px';
+            btnPlay.style.padding = '8px 14px';
             btnPlay.style.color = 'var(--text-primary)';
             btnPlay.style.borderRadius = '20px';
             btnPlay.style.cursor = 'pointer';
+            btnPlay.style.display = 'inline-flex';
+            btnPlay.style.alignItems = 'center';
+            btnPlay.style.gap = '8px';
+            btnPlay.style.fontSize = '0.85rem';
             
             btnPlay.onclick = () => {
-                ttsPlayer.src = `data:audio/mp3;base64,${audioB64}`;
+                // Determine audio format (OGG if starts with T2dnUw, otherwise MP3)
+                const mime = audioB64.startsWith('T2dnUw') ? 'audio/ogg' : 'audio/mp3';
+                ttsPlayer.src = `data:${mime};base64,${audioB64}`;
                 ttsPlayer.play();
                 btnPlay.innerHTML = '<i class="fa-solid fa-volume-high"></i> Playing...';
                 ttsPlayer.onended = () => {

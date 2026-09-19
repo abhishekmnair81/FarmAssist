@@ -23,25 +23,37 @@ def detect_voice(text: str, default_voice: str = "en-IN-NeerjaNeural") -> str:
     return default_voice
 
 import subprocess
+import shutil
+import tempfile
+import os
+from app.services.text_cleaner import clean_text_for_speech
 
 async def synthesize_speech(text: str, voice: str) -> bytes:
     """
     Synthesize text to speech using edge-tts.
-    Converts the output to OGG Opus via ffmpeg for WhatsApp PTT compatibility.
+    Strips markdown, emojis, citation brackets, and formats units for natural human speech.
+    Converts the output to OGG Opus via ffmpeg if available for WhatsApp PTT compatibility.
+    Falls back gracefully to clean MP3 bytes if ffmpeg is not installed.
     """
-    logger.info(f"Preparing to synthesize speech for voice {voice}: {repr(text)}")
-    communicate = edge_tts.Communicate(text, voice)
+    spoken_text = clean_text_for_speech(text)
+    if not spoken_text:
+        spoken_text = text
+
+    logger.info(f"Preparing to synthesize speech for voice {voice}: {repr(spoken_text[:120])}")
+    communicate = edge_tts.Communicate(spoken_text, voice)
     audio_stream = io.BytesIO()
     
     async for chunk in communicate.stream():
         if chunk["type"] == "audio":
             audio_stream.write(chunk["data"])
             
-    import tempfile
-    import os
-    
     mp3_bytes = audio_stream.getvalue()
     audio_stream.close()
+
+    # If ffmpeg is not available on the host system, return native MP3 bytes
+    if not shutil.which("ffmpeg"):
+        logger.info("ffmpeg not found on system; returning native MP3 audio bytes.")
+        return mp3_bytes
     
     with tempfile.NamedTemporaryFile(suffix=".mp3", delete=False) as temp_in:
         temp_in.write(mp3_bytes)
@@ -58,15 +70,24 @@ async def synthesize_speech(text: str, voice: str) -> bytes:
         )
         
         if process.returncode != 0:
-            raise RuntimeError(f"FFmpeg conversion failed: {process.stderr.decode()}")
+            logger.warning(f"FFmpeg conversion failed ({process.stderr.decode()[:100]}); falling back to MP3.")
+            return mp3_bytes
             
         with open(temp_out_path, "rb") as f:
             ogg_bytes = f.read()
+        return ogg_bytes
             
+    except Exception as e:
+        logger.warning(f"Error during ffmpeg conversion: {e}; falling back to MP3.")
+        return mp3_bytes
     finally:
         if os.path.exists(temp_in_path):
-            os.remove(temp_in_path)
+            try:
+                os.remove(temp_in_path)
+            except Exception:
+                pass
         if os.path.exists(temp_out_path):
-            os.remove(temp_out_path)
-            
-    return ogg_bytes
+            try:
+                os.remove(temp_out_path)
+            except Exception:
+                pass

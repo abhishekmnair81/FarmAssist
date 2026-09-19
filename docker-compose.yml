@@ -3,16 +3,19 @@ services:
   fastapi-bot:
     build: .
     ports:
-      - "8000:8000"
+      - "8005:8000"
     environment:
       - GROQ_API_KEY=${GROQ_API_KEY}
       - OPENWA_API_URL=${OPENWA_API_URL:-http://openwa-gateway:2785}
-      - OPENWA_API_KEY=${OPENWA_API_KEY}
-      - OPENWA_SESSION_ID=${OPENWA_SESSION_ID:-default}
+      - OPENWA_API_KEY=${OPENWA_API_KEY:-owa_k1_5651c16fb880af0819a31412ddd684ec29b42455b0951f001bfda50cbc2a0fe4}
+      - OPENWA_SESSION_ID=${OPENWA_SESSION_ID:-108660cd-ba61-48fe-8b83-4e1240fef328}
       - DEFAULT_LAT=${DEFAULT_LAT:-10.6541474}
       - DEFAULT_LON=${DEFAULT_LON:-76.7359742}
       - DEFAULT_VOICE=${DEFAULT_VOICE:-en-IN-NeerjaNeural}
-      - WHITELISTED_NUMBERS=${WHITELISTED_NUMBERS}
+      - NVDIA_API_KEY=${NVDIA_API_KEY}
+      - NVIDIA_API_KEY=${NVIDIA_API_KEY:-${NVDIA_API_KEY}}
+      - NVIDIA_MODEL=${NVIDIA_MODEL:-meta/llama-3.2-11b-vision-instruct}
+      - NVIDIA_BASE_URL=${NVIDIA_BASE_URL:-https://integrate.api.nvidia.com/v1}
     volumes:
       - ./app:/app/app
       - bot_data:/app/data
@@ -26,8 +29,9 @@ services:
     ports:
       - "2785:2785"
     environment:
-      - API_KEY=farmbot_secret_api_key_2026
+      - API_KEY=${OPENWA_API_KEY:-owa_k1_5651c16fb880af0819a31412ddd684ec29b42455b0951f001bfda50cbc2a0fe4}
       - WEBHOOK_SSRF_PROTECT=false
+      - ENABLE_SWAGGER=true
     volumes:
       - wa_data:/app/data
     networks:

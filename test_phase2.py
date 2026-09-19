@@ -1,16 +1,28 @@
 import asyncio
+import os
+import sys
 import uuid
-import re
 from langchain_core.messages import HumanMessage
 from langgraph.checkpoint.sqlite.aio import AsyncSqliteSaver
 from app.agent.graph import workflow
+from app.services.text_cleaner import clean_response_text
+
+if sys.platform == "win32":
+    try:
+        sys.stdout.reconfigure(encoding="utf-8")
+        sys.stderr.reconfigure(encoding="utf-8")
+    except Exception:
+        pass
 
 async def run_query(query: str):
     print(f"\n[{'='*40}]")
     print(f"User Query: {query}")
     print(f"[{'='*40}]")
     
-    db_path = "/app/data/checkpoints.sqlite"
+    data_dir = os.path.join(os.path.dirname(__file__), "data")
+    os.makedirs(data_dir, exist_ok=True)
+    db_path = os.path.join(data_dir, "checkpoints.sqlite")
+    
     phone = "TEST_USER_" + str(uuid.uuid4())[:8]
     config = {"configurable": {"thread_id": str(uuid.uuid4())}}
     
@@ -25,8 +37,8 @@ async def run_query(query: str):
         state = await graph.ainvoke(state_dict, config=config)
         final_message = state["messages"][-1].content
         
-        # Clean reasoning
-        stripped = re.sub(r'<think>.*?</think>', '', final_message, flags=re.DOTALL).strip()
+        # Clean reasoning and special characters
+        stripped = clean_response_text(final_message)
         print(f"Agent Response:\n{stripped}\n")
 
 async def main():
